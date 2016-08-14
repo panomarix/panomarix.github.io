@@ -9,22 +9,73 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Introduction
 
-This is an R Markdown document from Milan Hereygers. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+This assignment is about predicting the manner how barlifts are lifted, i.e. measuring the quality of the exercise. The data for this project comes from the source http://groupware.les.inf.puc-rio.br/har.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+## Data Loading and preparation
 
-```{r cars}
-summary(cars)
+```{r dataloading}
+library(caret)
+trainingdata <- read.csv("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv")
+testingdata <- read.csv("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv")
 ```
 
-## Including Plots
+The "classe" indicates how well the exercise has been performed. The training dataset is to be used for training the model and testing it. The testingdata dataset includes data of 20 different test cases that have to be predicted with the trained.
 
-You can also embed plots, for example:
+At first we will perform some data preparation: by removing all NA's in the trainingdata, remove all Columns that marginal variability and by removing irrelevant columns (e.g user name).
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r datapreparation}
+trainingdata <- trainingdata[ , colSums(is.na(trainingdata)) == 0]
+zeroVarCols <- nearZeroVar(trainingdata,saveMetrics=TRUE)
+trainingdata <- trainingdata[,!zeroVarCols$nzv]
+IrrelevantCols <- grepl("X|user|timestamp|window",names(trainingdata))
+trainingdata <- trainingdata[,!IrrelevantCols]
+dim(trainingdata)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+The dataset is therefore reduced to 53 columns, including the variable to predict.
+
+## Training model 
+
+I have opted to try out random forest, due to the high number of quantitive data and highly correlated values.
+In order to also calculate an out of sample error later on, I split up the data in a training and testing dataset.
+
+```{r modeltraining}
+set.seed(3452)
+
+inTrain <- createDataPartition(trainingdata$classe, p=0.7 , list=FALSE)
+training <- trainingdata[inTrain,]
+testing <-  trainingdata[-inTrain,]
+
+control=trainControl(method="cv",number=5)
+mod1 <- train(classe ~ ., method="rf", trControl=control , data=training)
+mod1
+```
+
+The random forest model has an accuracy of 99.22 %.
+
+## Cross validation
+
+I know use the testset to calulate an ou of sample error.
+
+```{r crossvalidation}
+prediction <- predict(mod1,testing)
+confusionMatrix(testing$classe,prediction)
+outOfSampleError <- sum(prediction!=testing$classe)/length(testing$classe)
+outOfSampleError
+```
+
+The out of sample error is 0.7%. Which is fair enough for me.
+
+## Prediction of 20 different test cases (Quiz input)
+
+Part of the assignment is to predict the quality of how well 20 test cases were performed, as a preparation for the additional quiz.
+
+```{r testcases}
+testingdata2 <- testingdata[ , colSums(is.na(testingdata)) == 0] 
+prediction2 <- predict(mod1,testingdata2)
+prediction2
+```
+
+

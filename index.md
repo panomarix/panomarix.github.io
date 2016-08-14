@@ -6,6 +6,8 @@
 
 This assignment is about predicting the manner how barlifts are lifted, i.e. measuring the quality of the exercise. The data for this project comes from the source http://groupware.les.inf.puc-rio.br/har.
 
+**Important Note**: The html output, which supports a browser, can found here [panomarix.github.io](http://panomarix.github.io) and the markdown file in repository [https://github.com/panomarix/panomarix.github.io](https://github.com/panomarix/panomarix.github.io)
+
 ## Data Loading and preparation
 
 
@@ -28,7 +30,7 @@ testingdata <- read.csv("https://d396qusza40orc.cloudfront.net/predmachlearn/pml
 
 The "classe" indicates how well the exercise has been performed. The training dataset is to be used for training the model and testing it. The testingdata dataset includes data of 20 different test cases that have to be predicted with the trained.
 
-At first we will perform some data preparation: by removing all NA's in the trainingdata, remove all Columns that marginal variability and by removing irrelevant columns (e.g user name).
+At first we will perform some data preparation: by removing all NA's in the trainingdata, remove all Columns that have marginal variability and by removing irrelevant columns (e.g user name).
 
 
 ```r
@@ -115,7 +117,7 @@ The random forest model has an accuracy of 99.22 %.
 
 ## Cross validation
 
-I know use the testset to calulate an ou of sample error.
+I now use the testset to calulate an out of sample error.
 
 
 ```r

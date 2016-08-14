@@ -122,6 +122,7 @@ $(document).ready(function () {
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
 <p>This assignment is about predicting the manner how barlifts are lifted, i.e. measuring the quality of the exercise. The data for this project comes from the source <a href="http://groupware.les.inf.puc-rio.br/har" class="uri">http://groupware.les.inf.puc-rio.br/har</a>.</p>
+<p><strong>Important Note</strong>: The html output, which supports a browser, can found here <a href="http://panomarix.github.io">panomarix.github.io</a> and the markdown file in repository <a href="https://github.com/panomarix/panomarix.github.io" class="uri">https://github.com/panomarix/panomarix.github.io</a></p>
 </div>
 <div id="data-loading-and-preparation" class="section level2">
 <h2>Data Loading and preparation</h2>
@@ -131,7 +132,7 @@ $(document).ready(function () {
 <pre class="r"><code>trainingdata &lt;- read.csv(&quot;https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv&quot;)
 testingdata &lt;- read.csv(&quot;https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv&quot;)</code></pre>
 <p>The “classe” indicates how well the exercise has been performed. The training dataset is to be used for training the model and testing it. The testingdata dataset includes data of 20 different test cases that have to be predicted with the trained.</p>
-<p>At first we will perform some data preparation: by removing all NA’s in the trainingdata, remove all Columns that marginal variability and by removing irrelevant columns (e.g user name).</p>
+<p>At first we will perform some data preparation: by removing all NA’s in the trainingdata, remove all Columns that have marginal variability and by removing irrelevant columns (e.g user name).</p>
 <pre class="r"><code>trainingdata &lt;- trainingdata[ , colSums(is.na(trainingdata)) == 0]
 zeroVarCols &lt;- nearZeroVar(trainingdata,saveMetrics=TRUE)
 trainingdata &lt;- trainingdata[,!zeroVarCols$nzv]
@@ -183,7 +184,7 @@ mod1 &lt;- train(classe ~ ., method=&quot;rf&quot;, trControl=control , data=tra
 </div>
 <div id="cross-validation" class="section level2">
 <h2>Cross validation</h2>
-<p>I know use the testset to calulate an ou of sample error.</p>
+<p>I now use the testset to calulate an out of sample error.</p>
 <pre class="r"><code>prediction &lt;- predict(mod1,testing)
 confusionMatrix(testing$classe,prediction)</code></pre>
 <pre><code>## Confusion Matrix and Statistics
